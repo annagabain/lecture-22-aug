@@ -3,6 +3,9 @@ import './App.css'
 import Book from './Components/Book';
 import AddBook from './Components/AddBook';
 
+
+// definierar strukturen för ett bokobjekt 
+
 interface BookInterface {
   title: string;
   author: string;
@@ -12,8 +15,13 @@ interface BookInterface {
   cover?: string;
 }
 
+
+// hanterar hela applikationens logik och rendering.
 function App() {
+
+  // Ett state som används för att kontrollera om formuläret för att lägga till en ny bok ska visas eller inte.
   const [showAddBook, setshowAddBook] = useState<boolean>(false);
+  // innehåller en array av böcker som användaren har i sin samling.
   const [bookList, setBookList] = useState<BookInterface[]>([
     {
       title: "Ulysses",
@@ -64,15 +72,25 @@ function App() {
     }
   ]);
 
+
+  // uppdaterar en befintlig bok i listan baserat på dess ISBN.
   function updateBookList(updatedBook: BookInterface) {
     let index = bookList.findIndex((book) => book.isbn === updatedBook.isbn);
     let updatedBookList = [...bookList];
     updatedBookList.splice(index, 1, updatedBook);
     setBookList(updatedBookList)
   };
+
+  // lägger till en ny bok till listan och stänger formuläret för att lägga till böcker
   function addBookToBookList(bookToAdd: BookInterface) {
     setBookList([...bookList, bookToAdd]);
     setshowAddBook(false);
+  }
+
+
+
+  function removeBookFromList(book: BookInterface) {
+    setBookList(bookList.filter(element => element.isbn !== book.isbn));
   }
 
   return (
@@ -86,11 +104,13 @@ function App() {
         <section className='bookList-container'>
           {
             bookList.map((book, i) => (
-              <Book key={i} book={book} updateBook={updateBookList} />
+              <Book key={i} book={book} updateBook={updateBookList} removeBookFromList={removeBookFromList}/>
             ))
           }
         </section>
       </main>
+
+      {/* Rendera <AddBook> komponenten om showAddBook är true */}
       {showAddBook ? <AddBook addBookFunction={addBookToBookList} toggleAddView={() => { setshowAddBook(false) }} /> : null}
     </>
   )
